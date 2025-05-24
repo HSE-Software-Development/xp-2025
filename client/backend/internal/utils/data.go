@@ -1,7 +1,7 @@
 package utils
 
 type Message struct {
-	Room   string `json:"Room"`
+	Room   string `json:"room"`
 	Sender string `json:"sender"`
 	Text   string `json:"text"`
 }
