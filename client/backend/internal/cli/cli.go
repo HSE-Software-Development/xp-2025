@@ -27,9 +27,9 @@ func RunCLI() {
 		room: room,
 	}
 
-	sendMessage(room, "Система", fmt.Sprintf("%s присоединился чату", name))
-
 	go handleMessages()
+
+	sendMessage(room, "Система", fmt.Sprintf("%s присоединился чату", name))
 
 	var input string
 	for {

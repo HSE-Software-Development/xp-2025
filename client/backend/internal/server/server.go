@@ -15,9 +15,6 @@ func SendMessage(message utils.Message) error {
 }
 
 func Join(room string) error {
-	err := Manager.CreateTopic(room)
-	if err != nil {
-		return nil
-	}
+	Manager.CreateTopic(room)
 	return Manager.Subscribe(room, ReceivedMessages)
 }
