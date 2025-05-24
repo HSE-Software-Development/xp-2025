@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простой чат</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .login-container, .room-container, .chat-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        input {
+            padding: 8px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message-sender {
+            font-weight: bold;
+            color: #333;
+        }
+        .split-container {
+            display: flex;
+            gap: 20px;
+        }
+        .left-panel {
+            flex: 1;
+        }
+        .right-panel {
+            flex: 2;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Шаг 1: Вход с именем -->
+        <div v-if="!userName" class="login-container">
+            <h2>Вход в чат</h2>
+            <input v-model="tempUserName" placeholder="Ваше имя">
+            <button @click="setUserName">Войти</button>
+        </div>
+
+        <!-- Шаг 2: Основной интерфейс чата -->
+        <div v-else class="split-container">
+            <div class="left-panel">
+                <div class="room-container">
+                    <h3>Подключение к комнате</h3>
+                    <input v-model="roomName" placeholder="Имя комнаты">
+                    <button @click="joinRoom">Подключиться</button>
+                    <p v-if="currentRoom">Текущая комната: {{ currentRoom }}</p>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="chat-container" v-if="currentRoom">
+                    <h3>Чат комнаты "{{ currentRoom }}"</h3>
+                    <div class="chat-messages">
+                        <div v-for="(message, index) in messages" :key="index" class="message">
+                            <span class="message-sender">{{ message.sender }}:</span> {{ message.text }}
+                        </div>
+                    </div>
+                    <input v-model="newMessage" @keyup.enter="sendMessage" placeholder="Введите сообщение">
+                    <button @click="sendMessage">Отправить</button>
+                </div>
+                <div v-else>
+                    <p>Выберите комнату для начала общения</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        tempUserName: '',
+        userName: '',
+        roomName: '',
+        currentRoom: '',
+        newMessage: '',
+        messages: [],
+        socket: null,
+        isConnected: false
+    },
+    methods: {
+        setUserName() {
+            if (this.tempUserName.trim()) {
+                this.userName = this.tempUserName;
+                this.connectWebSocket();
+            }
+        },
+        connectWebSocket() {
+            // Замените URL на адрес вашего Go сервера
+            this.socket = new WebSocket('ws://localhost:8080/ws');
+            
+            this.socket.onopen = () => {
+                this.isConnected = true;
+                console.log('WebSocket connected');
+                if (this.currentRoom) {
+                    this.joinRoom(this.currentRoom);
+                }
+            };
+            
+            this.socket.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                this.messages.push(message);
+                
+                this.$nextTick(() => {
+                    const messagesDiv = document.querySelector('.chat-messages');
+                    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                });
+            };
+            
+            this.socket.onclose = () => {
+                this.isConnected = false;
+                console.log('WebSocket disconnected');
+                // Попытка переподключения через 5 секунд
+                setTimeout(() => this.connectWebSocket(), 5000);
+            };
+        },
+        joinRoom() {
+            if (this.roomName.trim()) {
+                this.currentRoom = this.roomName;
+                this.messages = [];
+                
+                if (this.isConnected) {
+                    this.sendWebSocketMessage({
+                        type: 'join',
+                        room: this.roomName,
+                        sender: this.userName
+                    });
+                }
+            }
+        },
+        sendMessage() {
+            if (this.newMessage.trim() && this.currentRoom && this.isConnected) {
+                const message = {
+                    type: 'message',
+                    room: this.currentRoom,
+                    sender: this.userName,
+                    text: this.newMessage,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.sendWebSocketMessage(message);
+                this.newMessage = '';
+            }
+        },
+        sendWebSocketMessage(data) {
+            if (this.isConnected) {
+                this.socket.send(JSON.stringify(data));
+            }
+        },
+    },
+    beforeDestroy() {
+        if (this.socket) {
+            this.socket.close();
+        }
+    }
+});
+</script>
+</body>
+</html>
