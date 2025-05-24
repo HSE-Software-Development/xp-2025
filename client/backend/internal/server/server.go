@@ -31,3 +31,7 @@ func CreateAndJoin(room string) error {
 	}
 	return Manager.Subscribe(room, ReceivedMessages)
 }
+
+func Join(room, sender string) {
+	return
+}

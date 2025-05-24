@@ -1,4 +1,4 @@
-module github.com/HSE-Software-Development/xp-2025
+module github.com/HSE-Software-Development/xp-2025/client/backend
 
 go 1.24.2
 

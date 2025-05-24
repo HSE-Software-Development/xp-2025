@@ -1,11 +1,11 @@
-package main
+package gui
 
 import (
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/HSE-Software-Development/xp-2025/internal/server"
+	"github.com/HSE-Software-Development/xp-2025/client/backend/internal/server"
 	"github.com/gorilla/websocket"
 )
 
@@ -32,7 +32,7 @@ type Request struct {
 
 var clients = make(map[*Client]bool)
 
-func runServer() {
+func RunServer() {
 	http.HandleFunc("/ws", handleConnections)
 	go handleMessages()
 
