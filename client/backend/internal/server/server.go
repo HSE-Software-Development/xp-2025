@@ -10,7 +10,7 @@ var ReceivedMessages = make(chan utils.Message) // Буфер для сообщ�
 var Manager, err = manager.New([]string{"127.0.0.1:9092"})
 
 func SendMessage(message utils.Message) error {
-	ReceivedMessages <- message // Отправляем сообщение в канал ????? проверить надо ли
+	// ReceivedMessages <- message // Отправляем сообщение в канал ????? проверить надо ли
 	return Manager.Send(message)
 }
 

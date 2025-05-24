@@ -29,6 +29,7 @@ func RunCLI() {
 
 	go handleMessages()
 
+	server.Join(room)
 	sendMessage(room, "Система", fmt.Sprintf("%s присоединился чату", name))
 
 	var input string
@@ -65,7 +66,7 @@ func handleMessages() {
 		msg := <-server.ReceivedMessages
 
 		if msg.Room == client.room {
-			fmt.Printf("<%s>: %s", msg.Sender, msg.Text)
+			fmt.Printf("<%s>: %s\n", msg.Sender, msg.Text)
 		}
 	}
 }

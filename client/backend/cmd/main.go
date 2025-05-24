@@ -9,17 +9,17 @@ import (
 )
 
 func main() {
-	var mode string
-	flag.StringVar(&mode, "mode", "cli", "Режим работы программы (cli/gui)")
+	mode := flag.String("mode", "cli", "Режим запуска: 'cli' или 'gui'")
 	flag.Parse()
 
-	if mode == "cli" {
+	fmt.Println(*mode)
+	if *mode == "cli" {
 		fmt.Println("Запуск в CLI режиме...")
 		cli.RunCLI()
-	} else if mode == "gui" {
+	} else if *mode == "gui" {
 		fmt.Println("Запуск в GUI режиме...")
 		gui.RunServer()
 	} else {
-		panic("Неизвестный режим: " + mode)
+		fmt.Println("Error")
 	}
 }
