@@ -1,19 +1,24 @@
 # xp-2025
 
+## Запуск центрального сервера
+Поднимает docker контейнер на 9092 порту
+```bash
+cd server
+docker-compose up -d
+```
 
-## Запуск:
-Фронтенд:
+## Запуск клиента:
 ```
 cd client/frontend/xp-chat
 make run
-```
-Бэкенд:
-```
-cd client/backend
-make run
-```
 
-Кафка:
+cd ../../backend
+make run
+
 ```
-Макс вернись
-```
+Приложение будет доступно на 5173 порту локального host
+
+## Документы
+- [Техническое задание](docs/KR.txt)
+- [Архитектура приложения](docs/architecture.md)
+- [Архитектурная схема](docs/image.png)
