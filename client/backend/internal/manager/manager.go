@@ -4,7 +4,8 @@ import (
 	"log"
 
 	"encoding/json"
-	"github.com/HSE-Software-Development/xp-2025/internal/utils"
+
+	"github.com/HSE-Software-Development/xp-2025/client/backend/internal/utils"
 	"github.com/IBM/sarama"
 )
 
@@ -14,7 +15,6 @@ type KafkaSimple struct {
 	consumer sarama.Consumer
 	topic    string
 }
-
 
 func New(brokers []string) (*KafkaSimple, error) {
 	config := sarama.NewConfig()

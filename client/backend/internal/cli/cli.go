@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/HSE-Software-Development/xp-2025/client/backend/internal/server"
+	"github.com/HSE-Software-Development/xp-2025/client/backend/internal/utils"
 )
 
 type Client struct {
@@ -38,7 +39,7 @@ func RunCLI() {
 			if len(words) == 2 && words[0] == "!switch" {
 				sendMessage(client.room, "Система", fmt.Sprintf("%s покинул чат", name))
 				client.room = words[1]
-				server.Join(words[1], client.name)
+				server.Join(words[1])
 				sendMessage(client.room, "Система", fmt.Sprintf("%s присоединился чату", name))
 			} else if len(words) == 1 && words[0] == "!exit" {
 				return
@@ -51,7 +52,7 @@ func RunCLI() {
 }
 
 func sendMessage(room, sender, text string) {
-	msg := server.Message{
+	msg := utils.Message{
 		Room:   room,
 		Sender: sender,
 		Text:   text,

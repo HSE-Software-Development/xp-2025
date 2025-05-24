@@ -1,11 +1,11 @@
 package gui
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/HSE-Software-Development/xp-2025/client/backend/internal/server"
+	"github.com/HSE-Software-Development/xp-2025/client/backend/internal/utils"
 	"github.com/gorilla/websocket"
 )
 
@@ -61,26 +61,26 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		var msg server.Message
-
 		switch req.Type {
 		case "join":
 			client.room = req.Room
 			client.name = req.Sender
-			msg.Room = req.Room
-			msg.Sender = "Система"
-			msg.Text = req.Sender + " присоединился к чату"
+			msg := utils.Message{
+				Room:   req.Room,
+				Sender: "Система",
+				Text:   req.Sender + " присоединился к чату",
+			}
+			server.Join(req.Room)
+			server.SendMessage(msg)
 		case "message":
-			msg.Room = client.room
-			msg.Sender = req.Sender
-			msg.Text = req.Text
+			msg := utils.Message{
+				Room:   req.Room,
+				Sender: req.Sender,
+				Text:   req.Text,
+			}
+			server.Join(req.Room)
+			server.SendMessage(msg)
 		}
-		fmt.Println("Got request:")
-		fmt.Println(req)
-		fmt.Println("Sending message:")
-		fmt.Println(msg)
-
-		server.SendMessage(msg) // Отправляем сообщение в канал
 	}
 }
 
